@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<title>横向滑动导航条</title>
+	<style>
+		html,body{height:100%;margin:0;padding:0;}
+		nav {
+			line-height:2.4375rem;
+			height:2.4375rem;
+			font-size:.875rem;
+			border-bottom:1px solid transparent;
+			z-index:1000;
+			position:relative;
+		}
+		.wrap{
+			margin-left:5.625rem;
+			color:#666;
+			/* background:#f61d48; */
+			height:2.4375rem;
+			line-height:2.4375rem;;
+			position:relative;
+		}
+		.seclet{
+			position:absolute;
+			padding:0;
+			top:0;
+			left:-5.625rem;
+			z-index:3;
+			color:#666;
+			text-align: center;
+			width:5.625rem;
+			background:#eee;
+			border-right:1px solid #ddd;
+			border-bottom:1px solid #ddd;
+		}
+		.time>i:after {
+			top: 40%;
+			left: 4.2rem;
+			border: solid transparent;
+			content: " ";
+			height: 0;
+			width: 0;
+			position: absolute;
+			pointer-events: none;
+			/* border-color: rgba(136, 183, 213, 0); */
+			border-top-color: rgba(0, 0, 0, .6);
+			border-width: 5px;
+			margin-left: -5px;
+		}
+		.time-list{
+			position:absolute;
+			top:2.8375rem;
+			left:.4rem;
+			background-color:rgba(0, 0, 0,.8);
+			border-radius:6px;
+		}
+		.time-list:after {
+			bottom: 100%;
+			left: 50%;
+			border: solid transparent;
+			content: " ";
+			height: 0;
+			width: 0;
+			position: absolute;
+			pointer-events: none;
+			/* border-color: rgba(0, 0, 0, .7); */
+			border-bottom-color: rgba(0, 0, 0, .8);
+			border-width: 6px;
+			margin-left: -6px;
+		}
+		.time-list>a{
+			display:block;
+			width:5.625rem;
+			color:#fff;
+			text-decoration:none;
+			border-bottom:1px solid #888;
+		}
+		.time-list>a:first-child{
+			border-radius:6px 6px 0 0;
+		}
+		.time-list>a:last-child{
+			border-radius:0 0 6px 6px;
+		}
+		a.time-list-active{
+			/* background-color:#ddd; */
+			color:yellow;
+		}
+		.hide{display:none;}
+		.list-wrap{
+			overflow:auto;
+			z-index:2;
+			/*height:100%;*/
+			color:#666;
+			background-color:#eee;
+		}
+		.list-bd {
+		    white-space: nowrap;
+		    height: 100%;
+		    overflow: auto;
+		    -webkit-overflow-scrolling:touch;
+		}
+		.tab{
+			padding:0 .625rem;
+			margin:0;
+
+			display:inline-block;
+			/*height:98%;*/
+			position:relative;
+			color:#666;
+			text-decoration:none;
+			border-bottom: 1px solid #ddd;
+		}
+		.active{
+			color:#FF570D;
+		}
+		.active:after, .active:before {
+			bottom: -2%;
+			left: 50%;
+			border: solid transparent;
+			content: " ";
+			height: 0;
+			width: 0;
+			position: absolute;
+			pointer-events: none;
+		}
+		.active:after {
+			border-color: rgba(255, 255, 255, 0);
+			border-bottom-color: #fff;
+			border-width: 6px;
+			margin-left: -6px;
+		}
+		.active:before {
+			border-color: rgba(238,238,238,1);
+			border-bottom-color: #ddd;
+			border-width: 8px;
+			margin-left: -8px;
+		}
+		.content-area{
+			width:100%;
+			height:10rem;
+		}
+	</style>
+</head>
+<body>
+	<nav >
+		<div class="wrap">
+			<div class="seclet">
+				<div class="time">本月<i></i></div>
+				<div class="time-list hide">
+					<a href="#">今日</a>
+					<a href="#">昨日</a>
+					<a href="#">本周</a>
+					<a href="#">上周</a>
+					<a href="#" class="time-list-active">本月</a>
+					<a href="#">上月</a>
+				</div>
+			</div>
+			<div class="list-wrap">
+				<div class="list-bd" id="list"><a href="#" class="tab active" id="alink" data-id="link1">王子林林林</a><a href="#" class="tab" data-id="link2">王子林林林</a><a href="#" class="tab" data-id="link3">王子林林林</a><a href="#" class="tab" data-id="link4">王子林林林</a><a href="#" class="tab" data-id="link5">王子林林林</a><a href="#" class="tab" data-id="link6">王子林林林</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<div id="content" class="content-area"></div>
+	<script src="jquery-1.8.3.min.js"></script>
+	<script>
+        //jQuery对象级别的插件开发
+        $.fn.extend({
+            touchEvent:function(bind,touchEvent){
+                //bing is 绑定的元素；touchEvent 是触发的事件
+                if(typeof arguments[0] === 'function'){//只传进来一个函数
+                    touchEvent = arguments[0];
+                    bind='';
+                }else{
+                    bind = arguments[0];
+                    touchEvent = arguments[1];
+                }
+
+                this.on('touchstart',bind,function(){
+                    $(this).on('touchend',function(e){
+                        var that = this;
+                        touchEvent(that,e);
+                        $(this).off('touchend');//remove touched event
+                        return false;
+                    });
+                });
+
+                this.on('touchmove',bind,function(){
+                    $(this).off('touchend');
+                });
+                console.log(this);
+                return this;
+            }
+        })
+    </script>
+	<script>	
+		$('.time').on("touchstart",function(event){
+			$('.time-list').fadeToggle(400,'swing',function(){});
+			event.stopPropagation();
+    		event.preventDefault();
+		});
+		$(document).click(function(event){  
+		     $('.time-list').fadeOut(400,'swing',function(){});
+		})
+		$('.time-list a').on("touchstart",function(){
+			$('.time-list a').removeClass("time-list-active");
+			$(this).addClass("time-list-active");
+			$('.time-list').fadeToggle(400,'swing',function(){});
+		});
+		$('#list a').on('click',function(){
+			$('#list a').removeClass("active");
+			$(this).addClass("active");
+			var url = $(this).data("id") + '.txt';
+			$.get(url, function(response){
+			  $('#content').text(response);
+			})
+		});
+		// $('.time-list a').touchEvent(function(){
+		// 	$('.time-list a').removeClass("time-list-active");
+		// 	$(this).addClass("time-list-active");
+		// 	$('.time-list').fadeToggle(400,'swing',function(){});
+		// })
+	</script>
+</body>
+</html>
